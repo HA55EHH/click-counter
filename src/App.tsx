@@ -1,0 +1,116 @@
+import { useState, useEffect } from "react";
+import { listen } from "@tauri-apps/api/event";
+import "./styles.css";
+
+const quotes = [
+  "“The more you bet, the more you win when you win!”",
+  "“Fortune favors the bold.”",
+  "“You miss 100% of the shots you don’t take.”",
+  "“Take a chance and win big!”",
+  "“Go big or go home.”",
+  "“Every spin could be the win of a lifetime.”",
+  "“Dare to dream, dare to win.”",
+  "“Luck is what happens when preparation meets opportunity.”",
+  "“You can’t win if you don’t play.”",
+  "“Bet smart, win smarter.”",
+  "“Chase the thrill, embrace the win.”",
+  "“All it takes is one lucky break.”",
+  "“The next bet could change your life.”",
+  "“Keep spinning, your luck is just around the corner.”",
+  "“No guts, no glory.”",
+  "“One spin away from your biggest win!”",
+  "“Fortune rewards the fearless.”",
+  "“You can’t win big by playing it safe.”",
+  "“The next bet could be your biggest win yet.”",
+  "“Spin now, worry later.”",
+  "“It's only a gambling problem if you lose.”",
+];
+
+const getRandomQuote = (currentQuote: string) => {
+  let newQuote;
+  do {
+    newQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  } while (newQuote === currentQuote);
+  return newQuote;
+};
+
+function App() {
+  const [clickCount, setClickCount] = useState(0);
+  const [pausedState, setPausedState] = useState(0); // 0: running, 1: paused
+  const [randomQuote, setRandomQuote] = useState(getRandomQuote(""));
+
+  useEffect(() => {
+    const unlistenIncrement = listen("increment", () => {
+      if (pausedState === 0) {
+        setClickCount((prevCount) => prevCount + 1);
+      }
+    });
+
+    const unlistenDecrement = listen("decrement", () => {
+      if (pausedState === 0) {
+        setClickCount((prevCount) => prevCount - 1);
+      }
+    });
+
+    return () => {
+      unlistenIncrement.then((unsub) => unsub());
+      unlistenDecrement.then((unsub) => unsub());
+    };
+  }, [pausedState]);
+
+  const handlePause = () => {
+    if (pausedState === 0) {
+      setClickCount((prevCount) => prevCount - 1);
+    }
+    setPausedState((prevState) => (prevState === 0 ? 1 : 0));
+  };
+
+  const handleReset = () => {
+    setClickCount(0);
+    const newQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    setRandomQuote(newQuote);
+  };
+  return (
+    <div
+      style={{
+        WebkitUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",
+        userSelect: "none",
+      }}
+      className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
+    >
+      <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+        <h1 className="text-5xl font-extrabold text-indigo-600 mb-6">
+          Click Counter
+        </h1>
+        <h2 className="text-9xl font-extrabold text-indigo-600 transition-transform transform hover:scale-110">
+          {clickCount}
+        </h2>
+        <div className="mt-8 flex justify-center space-x-4">
+          <button
+            onClick={handlePause}
+            className="px-6 py-3 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+          >
+            {pausedState === 0 ? "Pause" : "Resume"}
+          </button>
+          <button
+            onClick={handleReset}
+            className="px-6 py-3 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+          >
+            Reset
+          </button>
+        </div>
+        {randomQuote && (
+          <div className="mt-8 flex justify-center">
+            <blockquote className="italic text-xl text-gray-800 w-80 h-16 text-center overflow-hidden">
+              {randomQuote}
+            </blockquote>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default App;
