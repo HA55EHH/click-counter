@@ -39,10 +39,16 @@ pub fn run() {
 
             if let Ok(Some(monitor)) = window.current_monitor() {
                 let screen_size: &tauri::PhysicalSize<u32> = monitor.size();
+                let new_width = (screen_size.width as f64 * 0.2) as u32; // Set width to 20% of screen width
                 let window_size = window.inner_size().unwrap();
-                let x = screen_size.width - window_size.width;
+                let new_x = screen_size.width - new_width;
                 let y = 0;
-                let _ = window.set_position(PhysicalPosition::new(x, y));
+
+                let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(
+                    new_width,
+                    window_size.height,
+                )));
+                let _ = window.set_position(PhysicalPosition::new(new_x, y));
             }
 
             std::thread::spawn(move || {

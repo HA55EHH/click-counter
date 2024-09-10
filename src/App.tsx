@@ -80,30 +80,30 @@ function App() {
       }}
       className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
     >
-      <div className="text-center p-8 bg-white rounded-lg shadow-lg">
-        <h1 className="text-5xl font-extrabold text-indigo-600 mb-6">
+      <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-full max-h-full">
+        <h1 className="text-4xl font-extrabold text-indigo-600 mb-6 sm:text-5xl md:text-6xl">
           Click Counter
         </h1>
-        <h2 className="text-9xl font-extrabold text-indigo-600 transition-transform transform hover:scale-110">
+        <h2 className="text-7xl font-extrabold text-indigo-600 transition-transform transform hover:scale-110 sm:text-8xl md:text-9xl">
           {clickCount}
         </h2>
         <div className="mt-8 flex justify-center space-x-4">
           <button
             onClick={handlePause}
-            className="px-6 py-3 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+            className="px-4 py-2 sm:px-6 sm:py-3 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
           >
             {pausedState === 0 ? "Pause" : "Resume"}
           </button>
           <button
-            onClick={handleReset}
-            className="px-6 py-3 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+            onMouseUp={handleReset}
+            className="px-4 py-2 sm:px-6 sm:py-3 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
           >
             Reset
           </button>
         </div>
         {randomQuote && (
           <div className="mt-8 flex justify-center">
-            <blockquote className="italic text-xl text-gray-800 w-80 h-16 text-center overflow-hidden">
+            <blockquote className="italic text-lg text-gray-800 w-64 sm:w-80 h-16 text-center overflow-hidden">
               {randomQuote}
             </blockquote>
           </div>
