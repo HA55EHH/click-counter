@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import "./styles.css";
 
@@ -38,18 +38,21 @@ function App() {
   const [clickCount, setClickCount] = useState(0);
   const [pausedState, setPausedState] = useState(0); // 0: running, 1: paused
   const [randomQuote, setRandomQuote] = useState(getRandomQuote(""));
+  const ignoreNext = useRef(0);
 
   useEffect(() => {
     const unlistenIncrement = listen("increment", () => {
-      if (pausedState === 0) {
+      if (pausedState === 0 && ignoreNext.current === 0) {
         setClickCount((prevCount) => prevCount + 1);
       }
+      ignoreNext.current = 0;
     });
 
     const unlistenDecrement = listen("decrement", () => {
-      if (pausedState === 0) {
-        setClickCount((prevCount) => prevCount - 1);
+      if (pausedState === 0 && ignoreNext.current === 0) {
+        setClickCount((prevCount) => Math.max(0, prevCount - 1));
       }
+      ignoreNext.current = 0;
     });
 
     return () => {
@@ -67,6 +70,8 @@ function App() {
 
   const handleReset = () => {
     setClickCount(0);
+    ignoreNext.current = 1;
+    console.log(ignoreNext);
     const newQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setRandomQuote(newQuote);
   };
@@ -95,7 +100,7 @@ function App() {
             {pausedState === 0 ? "Pause" : "Resume"}
           </button>
           <button
-            onMouseUp={handleReset}
+            onMouseDown={handleReset}
             className="px-4 py-2 sm:px-6 sm:py-3 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
           >
             Reset
