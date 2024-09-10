@@ -62,16 +62,13 @@ function App() {
   }, [pausedState]);
 
   const handlePause = () => {
-    if (pausedState === 0) {
-      setClickCount((prevCount) => prevCount - 1);
-    }
+    ignoreNext.current = 1;
     setPausedState((prevState) => (prevState === 0 ? 1 : 0));
   };
 
   const handleReset = () => {
     setClickCount(0);
     ignoreNext.current = 1;
-    console.log(ignoreNext);
     const newQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setRandomQuote(newQuote);
   };
@@ -94,7 +91,7 @@ function App() {
         </h2>
         <div className="mt-8 flex justify-center space-x-4">
           <button
-            onClick={handlePause}
+            onMouseDown={handlePause}
             className="px-4 py-2 sm:px-6 sm:py-3 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
           >
             {pausedState === 0 ? "Pause" : "Resume"}
