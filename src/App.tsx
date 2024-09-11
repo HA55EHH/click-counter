@@ -72,6 +72,21 @@ function App() {
     const newQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setRandomQuote(newQuote);
   };
+
+  const handleIncrement = () => {
+    if (ignoreNext.current === 0 && pausedState === 0) {
+      setClickCount((prevCount) => prevCount + 1);
+    }
+    ignoreNext.current = 1;
+  };
+
+  const handleDecrement = () => {
+    if (ignoreNext.current === 0 && pausedState === 0) {
+      setClickCount((prevCount) => Math.max(0, prevCount - 1));
+    }
+    ignoreNext.current = 1;
+  };
+
   return (
     <div
       style={{
@@ -86,9 +101,23 @@ function App() {
         <h1 className="text-4xl font-extrabold text-indigo-600 mb-6 sm:text-5xl md:text-6xl">
           Click Counter
         </h1>
-        <h2 className="text-7xl font-extrabold text-indigo-600 transition-transform transform hover:scale-110 sm:text-8xl md:text-9xl">
-          {clickCount}
-        </h2>
+        <div className="mt-8 flex justify-center items-center space-x-4">
+          <button
+            onMouseDown={handleDecrement}
+            className="px-4 py-2 sm:px-6 sm:py-3 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+          >
+            -
+          </button>
+          <h2 className="text-7xl font-extrabold text-indigo-600 transition-transform transform hover:scale-110 sm:text-8xl md:text-9xl">
+            {clickCount}
+          </h2>
+          <button
+            onMouseDown={handleIncrement}
+            className="px-4 py-2 sm:px-6 sm:py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+          >
+            +
+          </button>
+        </div>
         <div className="mt-8 flex justify-center space-x-4">
           <button
             onMouseDown={handlePause}
