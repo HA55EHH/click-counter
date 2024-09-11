@@ -29,7 +29,7 @@ pub fn run() {
                 let _ = main_window.with_webview(move |webview| {
                     unsafe {
                         // see https://docs.rs/webview2-com/0.19.1/webview2_com/Microsoft/Web/WebView2/Win32/struct.ICoreWebView2Controller.html
-                        webview.controller().SetZoomFactor(1.0 / sf).unwrap();
+                        webview.controller().SetZoomFactor(0.8 / sf).unwrap();
                     }
                 });
             }

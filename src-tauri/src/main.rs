@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    cliq_counter_lib::run()
+    click_counter_lib::run()
 }
