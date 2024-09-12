@@ -69,8 +69,7 @@ function App() {
   const handleReset = () => {
     setClickCount(0);
     ignoreNext.current = 1;
-    const newQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    setRandomQuote(newQuote);
+    setRandomQuote((prevQuote) => getRandomQuote(prevQuote));
   };
 
   const handleIncrement = () => {
