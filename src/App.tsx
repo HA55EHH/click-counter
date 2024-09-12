@@ -151,7 +151,7 @@ function App() {
         </div>
         {randomQuote && (
           <div className="mt-10 px-4">
-            <blockquote className="italic text-lg text-white bg-black bg-opacity-20 p-4 rounded-lg shadow-inner h-20 flex items-center justify-center overflow-hidden">
+            <blockquote className="italic text-lg text-white bg-black bg-opacity-20 p-4 rounded-lg shadow-inner h-24 flex items-center justify-center overflow-hidden">
               {randomQuote}
             </blockquote>
           </div>
