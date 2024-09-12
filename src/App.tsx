@@ -3,27 +3,53 @@ import { listen } from "@tauri-apps/api/event";
 import "./styles.css";
 
 const quotes = [
-  "“The more you bet, the more you win when you win!”",
-  "“Fortune favors the bold.”",
-  "“You miss 100% of the shots you don’t take.”",
-  "“Take a chance and win big!”",
-  "“Go big or go home.”",
-  "“Every spin could be the win of a lifetime.”",
-  "“Dare to dream, dare to win.”",
-  "“Luck is what happens when preparation meets opportunity.”",
-  "“You can’t win if you don’t play.”",
-  "“Bet smart, win smarter.”",
-  "“Chase the thrill, embrace the win.”",
-  "“All it takes is one lucky break.”",
-  "“The next bet could change your life.”",
-  "“Keep spinning, your luck is just around the corner.”",
-  "“No guts, no glory.”",
-  "“One spin away from your biggest win!”",
-  "“Fortune rewards the fearless.”",
-  "“You can’t win big by playing it safe.”",
-  "“The next bet could be your biggest win yet.”",
-  "“Spin now, worry later.”",
-  "“It's only a gambling problem if you lose.”",
+  "The more you bet, the more you win when you win!",
+  "Fortune favors the bold.",
+  "You miss 100% of the shots you don’t take.",
+  "Take a chance and win big!",
+  "Go big or go home.",
+  "Every spin could be the win of a lifetime.",
+  "Dare to dream, dare to win.",
+  "Luck is what happens when preparation meets opportunity.",
+  "You can’t win if you don’t play.",
+  "Bet smart, win smarter.",
+  "Chase the thrill, embrace the win.",
+  "All it takes is one lucky break.",
+  "The next bet could change your life.",
+  "Keep spinning, your luck is just around the corner.",
+  "No guts, no glory.",
+  "One spin away from your biggest win!",
+  "Fortune rewards the fearless.",
+  "You can’t win big by playing it safe.",
+  "The next bet could be your biggest win yet.",
+  "Spin now, worry later.",
+  "It's only a gambling problem if you lose.",
+  "Why not double down?",
+  "That horse that you can't stop thinking about? He's going to win.",
+  "They're laughing at you.",
+  "Coward.",
+  "Pussy.",
+  "Do it.",
+  "You can stop any time you want.",
+  "You're due for a win...",
+  "There's definitely a pattern...",
+  "It's not real money...",
+  "💰💰💰💰💰💰",
+  "💵💵💵💵💵💵",
+  "🤑🤑🤑🤑🤑🤑",
+  "You don't have a problem.",
+  "Don't think about it, just do it.",
+  "Stop THINKING and start BETTING.",
+  "It's not a gambling problem if you win.",
+  "Money won is twice as sweet as money earned.",
+  "Eat. Sleep. Spin. Repeat.",
+  "There's always tomorrow...",
+  "Another day, another spin.",
+  "https://uk.jbl.com/bluetooth-speakers/ 👀",
+  "Win today so that you have money to gamble tomorrow.",
+  "That PS5 Pro ain't gonna pay for itself...",
+  "It's not gambling when you know you're going to win.",
+  "FACT: 90% of gamblers quit before they win big.",
 ];
 
 const getRandomQuote = (currentQuote: string) => {
@@ -36,23 +62,23 @@ const getRandomQuote = (currentQuote: string) => {
 
 function App() {
   const [clickCount, setClickCount] = useState(0);
-  const [pausedState, setPausedState] = useState(0); // 0: running, 1: paused
+  const [pausedState, setPausedState] = useState(false);
   const [randomQuote, setRandomQuote] = useState(getRandomQuote(""));
-  const ignoreNext = useRef(0);
+  const ignoreNext = useRef(false);
 
   useEffect(() => {
     const unlistenIncrement = listen("increment", () => {
-      if (pausedState === 0 && ignoreNext.current === 0) {
+      if (!pausedState && !ignoreNext.current) {
         setClickCount((prevCount) => prevCount + 1);
       }
-      ignoreNext.current = 0;
+      ignoreNext.current = false;
     });
 
     const unlistenDecrement = listen("decrement", () => {
-      if (pausedState === 0 && ignoreNext.current === 0) {
+      if (!pausedState && !ignoreNext.current) {
         setClickCount((prevCount) => Math.max(0, prevCount - 1));
       }
-      ignoreNext.current = 0;
+      ignoreNext.current = false;
     });
 
     return () => {
@@ -62,78 +88,70 @@ function App() {
   }, [pausedState]);
 
   const handlePause = () => {
-    ignoreNext.current = 1;
-    setPausedState((prevState) => (prevState === 0 ? 1 : 0));
+    ignoreNext.current = true;
+    setPausedState((prevState) => !prevState);
   };
 
   const handleReset = () => {
     setClickCount(0);
-    ignoreNext.current = 1;
-    setRandomQuote((prevQuote) => getRandomQuote(prevQuote));
+    ignoreNext.current = true;
+    setRandomQuote(getRandomQuote(randomQuote));
   };
 
   const handleIncrement = () => {
-    if (ignoreNext.current === 0 && pausedState === 0) {
+    if (!ignoreNext.current && !pausedState) {
       setClickCount((prevCount) => prevCount + 1);
     }
-    ignoreNext.current = 1;
+    ignoreNext.current = true;
   };
 
   const handleDecrement = () => {
-    if (ignoreNext.current === 0 && pausedState === 0) {
+    if (!ignoreNext.current && !pausedState) {
       setClickCount((prevCount) => Math.max(0, prevCount - 1));
     }
-    ignoreNext.current = 1;
+    ignoreNext.current = true;
   };
 
   return (
-    <div
-      style={{
-        WebkitUserSelect: "none",
-        MozUserSelect: "none",
-        msUserSelect: "none",
-        userSelect: "none",
-      }}
-      className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
-    >
-      <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-full max-h-full">
-        <h1 className="text-4xl font-extrabold text-indigo-600 mb-6 sm:text-5xl md:text-6xl">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-tr from-blue-600 to-teal-400 text-gray-100 font-sans select-none">
+      <div className="text-center p-8 bg-transparent rounded-lg max-w-md w-full">
+        <h1 className="text-4xl font-extrabold text-white mb-6">
           Click Counter
         </h1>
-        <div className="mt-8 flex justify-center items-center space-x-4">
+        <div className="mt-8 flex justify-center items-center space-x-6">
           <button
-            onMouseDown={handleDecrement}
-            className="px-4 py-2 sm:px-6 sm:py-3 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+            onClick={handleDecrement}
+            className="w-12 h-12 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
+            aria-label="Decrement"
           >
-            -
+            &minus;
           </button>
-          <h2 className="text-7xl font-extrabold text-indigo-600 transition-transform transform hover:scale-110 sm:text-8xl md:text-9xl">
-            {clickCount}
-          </h2>
+          <h2 className="text-6xl font-bold text-white">{clickCount}</h2>
           <button
-            onMouseDown={handleIncrement}
-            className="px-4 py-2 sm:px-6 sm:py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+            onClick={handleIncrement}
+            className="w-12 h-12 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
+            aria-label="Increment"
           >
-            +
+            &#43;
           </button>
         </div>
         <div className="mt-8 flex justify-center space-x-4">
           <button
-            onMouseDown={handlePause}
-            className="px-4 py-2 sm:px-6 sm:py-3 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+            onClick={handlePause}
+            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
           >
-            {pausedState === 0 ? "Pause" : "Resume"}
+            {pausedState ? "Resume" : "Pause"}
           </button>
           <button
-            onMouseDown={handleReset}
-            className="px-4 py-2 sm:px-6 sm:py-3 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 focus:outline-none transition duration-300 ease-in-out transform hover:-translate-y-1"
+            onClick={handleReset}
+            className="px-6 py-2 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
           >
             Reset
           </button>
         </div>
         {randomQuote && (
-          <div className="mt-8 flex justify-center">
-            <blockquote className="italic text-lg text-gray-800 w-64 sm:w-80 h-16 text-center overflow-hidden">
+          <div className="mt-10 px-4">
+            <blockquote className="italic text-lg text-white bg-black bg-opacity-20 p-4 rounded-lg shadow-inner h-20 flex items-center justify-center overflow-hidden">
               {randomQuote}
             </blockquote>
           </div>
