@@ -1,6 +1,7 @@
 use rdev::{listen, Event};
 use tauri::{AppHandle, Manager};
 use tauri::{Emitter, PhysicalPosition};
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -23,14 +24,28 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
-            println!("Starting");
+            let window = app.get_webview_window("main").unwrap();
+            let app_handle = app.handle().clone();
+
+            // spawn the window in the top right, 20% of the horizontal axis and 50% of the vertical
+            if let Ok(Some(monitor)) = window.current_monitor() {
+                let screen_size: &tauri::PhysicalSize<u32> = monitor.size();
+                let new_width = (screen_size.width as f64 * 0.2) as u32;
+                let new_height = (screen_size.height as f64 * 0.5) as u32;
+                let new_x = screen_size.width - new_width;
+                let new_y = 0;
+
+                let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(
+                    new_width, new_height,
+                )));
+                let _ = window.set_position(PhysicalPosition::new(new_x, new_y));
+
+                // window is hidden by default, show once in the correct position
+                window.show().unwrap();
+            }
 
             #[cfg(desktop)]
             {
-                use tauri_plugin_global_shortcut::{
-                    Code, GlobalShortcutExt, Shortcut, ShortcutState,
-                };
-
                 let shortcuts = [
                     (Shortcut::new(None, Code::Minus), "decrement"),
                     (Shortcut::new(None, Code::Equal), "increment"),
@@ -55,9 +70,10 @@ pub fn run() {
                     app.global_shortcut().register(shortcut.clone())?;
                 }
             }
+
+            // handle the scaling issues on windows
             #[cfg(windows)]
             {
-                // handle the scaling issues on windows
                 let main_window = app.get_webview_window("main").unwrap();
                 let sf = main_window.scale_factor().unwrap();
                 let _ = main_window.with_webview(move |webview| {
@@ -68,22 +84,7 @@ pub fn run() {
                 });
             }
 
-            let window = app.get_webview_window("main").unwrap();
-            let app_handle = app.handle().clone(); // Clone the AppHandle
-
-            if let Ok(Some(monitor)) = window.current_monitor() {
-                let screen_size: &tauri::PhysicalSize<u32> = monitor.size();
-                let new_width = (screen_size.width as f64 * 0.2) as u32; // Set width to 20% of screen width
-                let new_height = (screen_size.height as f64 * 0.5) as u32; // Set width to 20% of screen width
-                let new_x = screen_size.width - new_width;
-                let y = 0;
-
-                let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(
-                    new_width, new_height,
-                )));
-                let _ = window.set_position(PhysicalPosition::new(new_x, y));
-            }
-
+            // the thread that listens to mouse clicks
             std::thread::spawn(move || {
                 if let Err(error) = listen(move |event| callback(event, app_handle.clone())) {
                     println!("Error: {:?}", error)

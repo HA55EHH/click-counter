@@ -1,6 +1,6 @@
 {
   "productName": "click-counter",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "identifier": "com.click-counter.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -12,6 +12,7 @@
     "windows": [
       {
         "label": "main",
+        "visible": false,
         "alwaysOnTop": true,
         "acceptFirstMouse": true,
         "title": "Click Counter",
