@@ -1,7 +1,6 @@
 use rdev::{listen, Event};
 use tauri::{AppHandle, Manager};
 use tauri::{Emitter, PhysicalPosition};
-use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -10,13 +9,13 @@ pub fn run() {
             rdev::EventType::ButtonRelease(rdev::Button::Left) => {
                 app_handle.emit("increment", ()).unwrap();
             }
-            // NOTE: The below doesn't seem to work properly on windows (when the app has focus)
-            // rdev::EventType::KeyPress(rdev::Key::Plus) => {
-            //     app_handle.emit("increment", ()).unwrap();
-            // }
-            // rdev::EventType::KeyPress(rdev::Key::Minus) => {
-            //     app_handle.emit("decrement", ()).unwrap();
-            // }
+            // NOTE: The below doesn't seem to work properly on windows (when the app has focus, so we use listeners on the front end too)
+            rdev::EventType::KeyPress(rdev::Key::Equal) => {
+                app_handle.emit("increment", ()).unwrap();
+            }
+            rdev::EventType::KeyPress(rdev::Key::Minus) => {
+                app_handle.emit("decrement", ()).unwrap();
+            }
             _ => (),
         }
     }
@@ -42,33 +41,6 @@ pub fn run() {
 
                 // window is hidden by default, show once in the correct position
                 window.show().unwrap();
-            }
-
-            #[cfg(desktop)]
-            {
-                let shortcuts = [
-                    (Shortcut::new(None, Code::Minus), "decrement"),
-                    (Shortcut::new(None, Code::Equal), "increment"),
-                ];
-
-                let app_handle = app.handle();
-                app_handle.plugin(
-                    tauri_plugin_global_shortcut::Builder::new()
-                        .with_handler(move |_app, shortcut, event| {
-                            if let ShortcutState::Pressed = event.state() {
-                                for (key, action) in &shortcuts {
-                                    if shortcut == key {
-                                        _app.emit(action, ()).unwrap();
-                                    }
-                                }
-                            }
-                        })
-                        .build(),
-                )?;
-
-                for (shortcut, _) in &shortcuts {
-                    app.global_shortcut().register(shortcut.clone())?;
-                }
             }
 
             // handle the scaling issues on windows

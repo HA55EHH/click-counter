@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { listen } from "@tauri-apps/api/event";
+import { listen, emit } from "@tauri-apps/api/event";
 import "./styles.css";
 
 const quotes = [
@@ -112,6 +112,23 @@ function App() {
     ignoreNext.current = true;
   };
 
+  // annoying workaround, for some reason rdev won't register keyboard commands when the app is focused
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "=") {
+        emit('increment');
+      }
+      if (event.key === "-") {
+        emit('decrement');
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-tr from-blue-600 to-teal-400 text-gray-100 font-sans select-none">
       <div className="text-center p-8 bg-transparent rounded-lg max-w-md w-full">
@@ -120,7 +137,7 @@ function App() {
         </h1>
         <div className="mt-8 flex justify-center items-center space-x-6">
           <button
-            onClick={handleDecrement}
+            onMouseDown={handleDecrement}
             className="w-12 h-12 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
             aria-label="Decrement"
           >
@@ -128,7 +145,7 @@ function App() {
           </button>
           <h2 className="text-6xl font-bold text-white">{clickCount}</h2>
           <button
-            onClick={handleIncrement}
+            onMouseDown={handleIncrement}
             className="w-12 h-12 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
             aria-label="Increment"
           >
@@ -137,13 +154,13 @@ function App() {
         </div>
         <div className="mt-8 flex justify-center space-x-4">
           <button
-            onClick={handlePause}
+            onMouseDown={handlePause}
             className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
           >
             {pausedState ? "Resume" : "Pause"}
           </button>
           <button
-            onClick={handleReset}
+            onMouseDown={handleReset}
             className="px-6 py-2 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white rounded-full shadow-md transition-transform transform hover:-translate-y-1 focus:outline-none"
           >
             Reset
